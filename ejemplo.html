@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tabla con selección y control de páginas</title>
+  <link href="tableAjmo.css" rel="stylesheet">
+  <script type="text/javascript" src='tableAjmo.js'></script>
+</head>
+<body>
+
+  <h2>Tabla con Selección y Control de Páginas</h2>
+  <button onclick="btnmostrar()">mostrar</button>
+  <div id="miContenedor">
+    <div data-actions="actions" data-item="item" style="display: none;">
+      <button class="btn-icon" style="color: blue;" onclick="verDetalle($event)"><span class="material-symbols-outlined">  visibility </span></button>
+      <button class="btn-icon" style="color: red;" onclick="editar($event)"><span class="material-symbols-outlined">  edit </span></button>
+    </div>
+
+    <div data-actions="descripcion" data-item="item" style="display: none;">
+      <div>
+        <strong>{{item.descripcion | upper}}</strong>
+      </div>
+    </div>
+
+    <div data-actions="nombre" data-item="item" style="display: none;">
+      <div>
+        {{item.nombre === 'Juan Pérez' ? 'Nombre Validado' : item.nombre}}
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    function verDetalle(obj) {
+    alert("Ver detalles de: " + JSON.stringify(obj));
+  }
+
+  function editar(obj) {
+    alert("Editar cuenta: " + obj.cuentaCompania);
+  }
+    const instancia  = crearTablaConPaginacion({
+      contenedor: '#miContenedor',
+      columnas: [
+        { campo: 'clave', titulo: 'Codigo Banco', style:'width:20%' },
+        { campo: 'descripcion', titulo: 'cuenta compania', style:'width:20%' },
+        { campo: 'nombre', titulo: 'Banco', style:'width:35%' },
+        { campo: 'actions' }
+      ],
+      datos: [
+        { "id": 1, "clave": "EMP001", "nombre": "Juan Pérez", "descripcion": "Empleado del área de ventas" },
+        { "id": 2, "clave": "EMP002", "nombre": "María Gómez", "descripcion": "Gerente de recursos humanos" },
+        { "id": 3, "clave": "EMP003", "nombre": "Luis Martínez", "descripcion": "Desarrollador backend" },
+        { "id": 4, "clave": "EMP004", "nombre": "Ana Torres", "descripcion": "Diseñadora UX/UI" },
+        { "id": 5, "clave": "EMP005", "nombre": "Carlos Ruiz", "descripcion": "Especialista en marketing digital" },
+        { "id": 6, "clave": "EMP006", "nombre": "Laura Hernández", "descripcion": "Analista de datos" },
+        { "id": 7, "clave": "EMP007", "nombre": "Jorge Ramírez", "descripcion": "Administrador de base de datos" },
+        { "id": 8, "clave": "EMP008", "nombre": "Diana Salinas", "descripcion": "Líder de proyectos TI" },
+        { "id": 9, "clave": "EMP009", "nombre": "Pedro López", "descripcion": "Soporte técnico nivel 2" },
+        { "id": 10, "clave": "EMP010", "nombre": "Sofía Méndez", "descripcion": "Especialista en QA y testing" }
+      ],
+      filasPorPagina: 3,
+      opcionesPorPagina: [2, 3, 5, 10, 20, 50],
+      checkedList: true
+    });
+
+
+    function btnmostrar() {
+      const idsSeleccionados = instancia.obtenerSeleccionados();
+      console.log('IDs seleccionados:', idsSeleccionados);
+    }
+  </script>
+</body>
+</html>
