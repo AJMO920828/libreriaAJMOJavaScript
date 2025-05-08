@@ -13,7 +13,7 @@ Este proyecto presenta un componente de tabla construido con JavaScript puro, qu
 
 ## 🧩 Componentes
 
-### 1. `tableAjmo.js`
+### 1. `ajmo.js`
 
 JavaScript modular que expone la función `crearTablaConPaginacion`, capaz de:
 
@@ -41,7 +41,7 @@ crearTablaConPaginacion({
 });
 ```
 
-### 2. `tableAjmo.css`
+### 2. `ajmo.css`
 
 Archivo de estilos diseñado para una tabla limpia, moderna y responsive.
 
