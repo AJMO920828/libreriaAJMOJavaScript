@@ -54,3 +54,10 @@ Incluye:
 ### 3. `index.html`
 
 Ejemplo de uso de la tabla con definición de plantillas embebidas y botones con eventos personalizados.
+
+
+
+
+
+
+https://app.netlify.com/teams/ajmo920828/sites
