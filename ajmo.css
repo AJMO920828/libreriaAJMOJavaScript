@@ -1,0 +1,194 @@
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons"); /* Lista de iconos https://fonts.google.com/icons?icon.size=24&icon.color=%231f1f1f&icon.set=Material+Icons */
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined'); /* Lista de iconos https://fonts.google.com/icons */
+
+
+/**
+*
+*Estilos para los tooltips
+*/
+.tooltip-ajmo {
+  position: absolute;
+  background: #333;
+  color: #fff;
+  font-size: 13px !important;
+  padding: 6px 10px;
+  border-radius: 4px;
+  z-index: 9999;
+  max-width: 250px;
+  max-height: 200px;
+  overflow-y: auto;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+
+/**
+*
+*Estilos para la tabla
+*/
+.material-symbols-outlined {
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+  font-family: 'Material Symbols Outlined';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 24px;
+  display: inline-block;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  direction: ltr;
+}
+.btn-icon {
+  background: none;
+  border: none;
+  padding: 4px;
+  margin: 0 2px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #555; /* color base */
+  transition: background-color 0.2s, color 0.2s;
+  border-radius: 4px;
+}
+
+.btn-icon:hover {
+  background-color: #f0f0f0;
+  color: #000;
+  border-radius: 50%;
+}
+
+.material-symbols-outlined {
+  font-size: 24px;
+  line-height: 1;
+  user-select: none;
+}
+
+
+body {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background: #f9f9f9;
+}
+
+table.tabla-ajmo {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+th.th-ajmo, td.td.ajmo {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+th.th-ajmo {
+  background-color: #f2f2f2;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+th.sort-asc::after {
+  content: " ▲";
+}
+
+th.sort-desc::after {
+  content: " ▼";
+}
+tr.tr-ajmo:focus, tr.tr-ajmo:hover {
+  background: #dddddd;
+}
+
+tr.tr-ajmo{
+  height: 30px;
+}
+
+.check-ajmo, #selectAll {
+  width: 100%;
+}
+
+input[type="checkbox"] {
+  transform: scale(1.2);
+  cursor: pointer;
+}
+
+.tabla-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px 0;
+  background-color: #fafafa;
+}
+
+.tabla-footer .paginacion {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.tabla-footer .byPagina {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.tabla-footer button {
+  background-color: #007BFF;
+  border: none;
+  color: white;
+  font-size: 18px;
+  padding: 8px;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.tabla-footer button:hover:not(:disabled) {
+  background-color: #0056b3;
+  transform: translateY(-1px);
+}
+
+.tabla-footer button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.tabla-footer select {
+  padding: 5px 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.material-icons {
+  font-size: 20px;
+}
+
+.info-pagina {
+  font-size: 14px;
+  color: #333;
+}
