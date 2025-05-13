@@ -1,63 +1,116 @@
-# Tabla con Selección, Paginación y Plantillas HTML Dinámicas
+# 🧩 Librería AJMO - Componentes Dinámicos para Web
 
-Este proyecto presenta un componente de tabla construido con JavaScript puro, que ofrece funcionalidades avanzadas como:
+Este proyecto es una demostración de la **librería AJMO**, que provee funcionalidades dinámicas para formularios, tablas con paginación, tooltips personalizados y lógica de plantillas estilo mini-Vue.
 
-- Selección de filas (checkbox)
-- Paginación dinámica
-- Ordenamiento por columnas
-- Plantillas HTML embebidas usando sintaxis tipo `{{ item.prop | filtro }}`
-- Estilos personalizados con CSS
-- Separación por capas: lógica (JS), presentación (CSS) y estructura (HTML)
+## 🛠️ Tecnologías utilizadas
+
+- HTML5
+- JavaScript (ES6+)
+- [Bootstrap 5.3](https://getbootstrap.com/docs/5.3/getting-started/introduction/)
+- jQuery 3.6 (solo para compatibilidad mínima)
+- `ajmo.js`: librería personalizada
 
 ---
 
-## 🧩 Componentes
+## ⚙️ Funcionalidades incluidas
 
-### 1. `ajmo.js`
+### 1. Validación de formularios
 
-JavaScript modular que expone la función `crearTablaConPaginacion`, capaz de:
+- Campos obligatorios (`required`)
+- Validación de email, número, patrón (`pattern`)
+- Agrupación de `radio` y `checkbox` con mensajes personalizados
+- Soporte para campos dependientes (`data-depends-on`)
+- Validación de tamaño máximo de archivos (`data-max-size`)
+- Validación dinámica al escribir (`blur`, `keyup`, `change`)
 
-- Renderizar tablas dinámicamente con datos proporcionados
-- Insertar HTML personalizado por campo desde contenedores `data-actions`
-- Soportar filtros simples (`upper`, `lower`, `capitalize`)
-- Gestionar selección de múltiples elementos con `checkbox`
-- Crear un sistema de paginación con estilos y control
-- Controlar orden ascendente/descendente al hacer clic en encabezados
+```html
+<input type="email" name="correo" required msg-error-email="Correo inválido">
+```
 
-#### API:
+### 2. Tooltips Personalizados
 
-```js
+- Se activan con el atributo `tooltip`
+- Soporta posiciones: `arriba`, `abajo`, `izquierda`, `derecha`
+
+```html
+<button tooltip tooltip-msg="Texto del tooltip" tooltip-posicion="arriba">Hover aquí</button>
+```
+
+### 3. Tabla Dinámica con Paginación
+
+- Paginación configurable
+- Ordenamiento por columna
+- Columnas dinámicas con plantillas HTML usando `{{item.prop}}`
+- Filtros disponibles: `upper`, `lower`, `capitalize`
+- Checkbox por fila y botón "Seleccionar todo"
+- Exportación a CSV
+
+```javascript
 crearTablaConPaginacion({
-  contenedor: '#miContenedor',
+  contenedor: "#contenedorTabla",
   columnas: [
-    { campo: 'codigoBanco', titulo: 'Codigo Banco' },
-    { campo: 'cuentaCompania', titulo: 'Cuenta Compañía' },
-    ...
+    { campo: "nombre", titulo: "Nombre" },
+    { campo: "email", titulo: "Correo" },
+    { campo: "acciones", titulo: "Acciones" }
   ],
-  datos: [ ... ], // Lista de objetos
-  filasPorPagina: 10,
-  opcionesPorPagina: [5, 10, 20, 50],
-  checkedList: true
+  datos: [{ id: 1, nombre: "Erik", email: "erik@mail.com" }],
+  filasPorPagina: 5,
+  checkedList: true,
+  exportar: true
 });
 ```
 
-### 2. `ajmo.css`
+### 4. Llenado automático de formularios
 
-Archivo de estilos diseñado para una tabla limpia, moderna y responsive.
+```javascript
+llenaFormulario({ nombre: "Juan", email: "juan@mail.com" }, 'formulario_demo');
+```
 
-Incluye:
+### 5. Lógica condicional dentro de la tabla
 
-- Estilos de botones icónicos (`Material Icons`)
-- Formato visual para filas alternas, ordenamiento, paginación, y selección
-- Responsive y con buenos contrastes para lectura y usabilidad
+```html
+<div data-actions="union" data-item="item" style="display: none;">
+  <span>{{item.nombre}} - {{item.email}}</span>
+  <span tooltip tooltip-msg="Correo empresarial">
+    {{item.email.includes('example.com') ? '📧' : ''}}
+  </span>
+</div>
+```
 
-### 3. `index.html`
+---
 
-Ejemplo de uso de la tabla con definición de plantillas embebidas y botones con eventos personalizados.
+## 📁 Estructura del Proyecto
 
+```
+/
+├── index.html           # Página principal de ejemplo
+├── ajmo.js              # Librería JavaScript con toda la lógica
+├── ajmo.css             # Estilos para tabla, tooltips, validación
+├── tableAjmo.css        # (opcional) Tema de la tabla
+└── README.md            # Documentación del proyecto
+```
 
+---
 
+## 🚀 Cómo empezar
 
+1. Clona o descarga el proyecto.
+2. Asegúrate de tener un servidor local (como Live Server).
+3. Abre `index.html` en tu navegador.
 
+---
 
-https://app.netlify.com/teams/ajmo920828/sites
+## ✨ Personalización
+
+- Puedes definir tus propias expresiones dentro de `data-actions`.
+- La función `actualizarDatos()` permite actualizar la tabla sin recargar.
+- Compatible con `template-like` expressions en HTML (`{{ }}`) sin frameworks externos.
+
+---
+
+## 🧪 Demo interactiva
+
+Incluye ejemplos visuales para:
+
+- Validar formularios
+- Interactuar con registros seleccionados
