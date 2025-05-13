@@ -1,5 +1,5 @@
 /** icons*/ 
-@font-face {
+/*@font-face {
   font-family: 'Material Icons';
   font-style: normal;
   font-weight: 400;
@@ -44,7 +44,7 @@
   -webkit-font-feature-settings: 'liga';
   -webkit-font-smoothing: antialiased;
 }
-
+*/
 @import url("https://fonts.googleapis.com/icon?family=Material+Icons"); /* Lista de iconos https://fonts.google.com/icons?icon.size=24&icon.color=%231f1f1f&icon.set=Material+Icons */
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined'); /* Lista de iconos https://fonts.google.com/icons */
 
