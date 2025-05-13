@@ -182,6 +182,36 @@ function validarFormularioGenerico(formId) {
     }
   }
 
+    // Validación de grupos data-group
+  const grupos = {};
+  campos.forEach(campo => {
+    const grupo = campo.getAttribute('data-group');
+    if (grupo) {
+      if (!grupos[grupo]) grupos[grupo] = [];
+      grupos[grupo].push(campo);
+    }
+  });
+
+  for (const grupo in grupos) {
+    const camposGrupo = grupos[grupo];
+    const algunoLleno = camposGrupo.some(c => c.value.trim());
+    const agrupador = camposGrupo[0].closest('.group') || camposGrupo[0].parentElement;
+
+    agrupador.querySelectorAll('.invalid-feedback').forEach(e => e.remove());
+    camposGrupo.forEach(c => c.classList.remove('is-invalid'));
+
+    if (!algunoLleno) {
+      const error = document.createElement('div');
+      error.className = 'invalid-feedback';
+      error.textContent = camposGrupo[0].getAttribute('msg-error-required') || 'Llena al menos un campo del grupo.';
+      error.style.display = 'block';
+      agrupador.appendChild(error);
+      camposGrupo.forEach(c => c.classList.add('is-invalid'));
+      esValido = false;
+    }
+  }
+
+
   return esValido;
 }
 
@@ -586,19 +616,30 @@ function crearTablaConPaginacion({
     });
 
     const walker = document.createTreeWalker(clone, NodeFilter.SHOW_TEXT, null, false);
+    const nodosParaReemplazar = [];
+
     while (walker.nextNode()) {
       const node = walker.currentNode;
       if (node.nodeValue.includes('{{')) {
-        const span = document.createElement('span');
-        span.setAttribute('data-tpl', node.nodeValue);
-        node.parentNode.replaceChild(span, node);
-        span.textContent = '';
+        nodosParaReemplazar.push(node);
       }
     }
 
-    clone.querySelectorAll('[data-tpl]').forEach(el => {
-      procesarElemento(el, item);
+    nodosParaReemplazar.forEach(node => {
+      const fragment = document.createDocumentFragment();
+      const partes = node.nodeValue.split(/({{.*?}})/g);
+      partes.forEach(part => {
+        if (part.startsWith('{{') && part.endsWith('}}')) {
+          const span = document.createElement('span');
+          span.setAttribute('data-tpl', part.trim());
+          fragment.appendChild(span);
+        } else {
+          fragment.appendChild(document.createTextNode(part));
+        }
+      });
+      node.parentNode.replaceChild(fragment, node);
     });
+    clone.querySelectorAll('[data-tpl]').forEach(el => procesarElemento(el, item));
     
     clone.querySelectorAll('*').forEach(el => {
       [...el.attributes].forEach(attr => {
@@ -609,23 +650,6 @@ function crearTablaConPaginacion({
     });
 
     return clone;
-  }
-
-  function renderExpresion(template, item) {
-    return template.replace(/{{\s*(.*?)\s*}}/g, (_, expression) => {
-      try {
-        let [exp, filtro] = expression.split('|').map(s => s.trim());
-        exp = exp.replace(/item\.(\w+)/g, (_, prop) => {
-          const val = item[prop];
-          return typeof val === 'string' ? `'${val}'` : val;
-        });
-        let result = eval(exp);
-        if (filtro && filtros[filtro]) result = filtros[filtro](result);
-        return result != null ? result : '';
-      } catch {
-        return '';
-      }
-    });
   }
 
   function refrescarTabla() {
@@ -814,6 +838,10 @@ function crearTablaConPaginacion({
     paginador.appendChild(info);
     paginador.appendChild(crearBoton('chevron_right', () => cambiarPagina(paginaActual + 1), paginaActual === totalPaginas));
     paginador.appendChild(crearBoton('last_page', () => cambiarPagina(totalPaginas), paginaActual === totalPaginas));
+
+    if (typeof activarTooltipsAJMO === 'function') {
+      activarTooltipsAJMO();
+    }
   }
 
   function cambiarPagina(nuevaPagina) {
@@ -851,11 +879,14 @@ function crearTablaConPaginacion({
     obtenerSeleccionados: () => Array.from(seleccionados.values()),
     refrescarTabla,
     actualizarDatos: ({nuevosDatos, checkedList, selectAllAcrossPages}) => {
-      datos.length = 0;
-      nuevosDatos.forEach(d => {
-        if (d.id === undefined) d.id = numeroConMilisegundos();
-        datos.push(d);
-      });
+        if(nuevosDatos){
+          datos.length = 0;
+          nuevosDatos.forEach(d => {
+          if (d.id === undefined) d.id = numeroConMilisegundos();
+          datos.push(d);
+        });
+      }
+      
       if(checkedList != null) {
         _checkedList = checkedList
       }
@@ -866,6 +897,39 @@ function crearTablaConPaginacion({
       render();
     }
   };
+}
+
+function renderExpresion(template, item) {
+  try {
+    return template.replace(/{{\s*(.*?)\s*}}/g, (_, expression) => {
+      let exp = expression;
+      let filtro = null;
+
+      if (expression.includes('|')) {
+        [exp, filtro] = expression.split('|').map(e => e.trim());
+      }
+
+      let result = new Function('item', `with(item){ return ${exp}; }`)(item);
+
+      const filtros = {
+        upper: val => String(val).toUpperCase(),
+        lower: val => String(val).toLowerCase(),
+        capitalize: val => {
+          const s = String(val);
+          return s.charAt(0).toUpperCase() + s.slice(1);
+        }
+      };
+
+      if (filtro && filtros[filtro]) {
+        result = filtros[filtro](result);
+      }
+
+      return result ?? '';
+    });
+  } catch (err) {
+    console.warn('Error evaluando expresión:', err);
+    return '';
+  }
 }
 
 function numeroConMilisegundos(min = 0, max = 9999) {
@@ -883,5 +947,84 @@ function procesarElemento(el, item) {
       const realAttr = attr.name.replace('data-tpl-', '');
       el.setAttribute(realAttr, renderExpresion(attr.value, item));
     }
+  });
+}
+
+function activarTooltipsAJMO() {
+  const tooltip = document.querySelector(".tooltip-ajmo");
+  if (!tooltip) return;
+
+  document.querySelectorAll("[tooltip]").forEach(el => {
+    // Elimina eventos anteriores si los hubiera
+    el.removeEventListener("mouseenter", el._tooltipEnter);
+    el.removeEventListener("mouseleave", el._tooltipLeave);
+    el.removeEventListener("focus", el._tooltipEnter);
+    el.removeEventListener("blur", el._tooltipLeave);
+
+    const mostrar = () => {
+      const msg = el.getAttribute("tooltip-msg") || "";
+      const html = el.getAttribute("tooltip-html");
+      let pos = el.getAttribute("tooltip-posicion") || "arriba";
+
+      tooltip.innerHTML = html || msg;
+      tooltip.style.opacity = 1;
+
+      tooltip.style.left = "-9999px";
+      tooltip.style.top = "-9999px";
+      tooltip.style.display = "block";
+
+      const rect = el.getBoundingClientRect();
+      const ttRect = tooltip.getBoundingClientRect();
+
+      const espacio = {
+        arriba: rect.top,
+        abajo: window.innerHeight - rect.bottom,
+        izquierda: rect.left,
+        derecha: window.innerWidth - rect.right,
+      };
+
+      if (pos === "arriba" && espacio.arriba < ttRect.height + 10) pos = "abajo";
+      else if (pos === "abajo" && espacio.abajo < ttRect.height + 10) pos = "arriba";
+      else if (pos === "izquierda" && espacio.izquierda < ttRect.width + 10) pos = "derecha";
+      else if (pos === "derecha" && espacio.derecha < ttRect.width + 10) pos = "izquierda";
+
+      let top = 0, left = 0;
+
+      switch (pos) {
+        case "abajo":
+          top = rect.bottom + window.scrollY + 8;
+          left = rect.left + window.scrollX + rect.width / 2 - ttRect.width / 2;
+          break;
+        case "arriba":
+          top = rect.top + window.scrollY - ttRect.height - 8;
+          left = rect.left + window.scrollX + rect.width / 2 - ttRect.width / 2;
+          break;
+        case "izquierda":
+          top = rect.top + window.scrollY + rect.height / 2 - ttRect.height / 2;
+          left = rect.left + window.scrollX - ttRect.width - 8;
+          break;
+        case "derecha":
+        default:
+          top = rect.top + window.scrollY + rect.height / 2 - ttRect.height / 2;
+          left = rect.right + window.scrollX + 8;
+          break;
+      }
+
+      tooltip.style.top = `${Math.max(top, 0)}px`;
+      tooltip.style.left = `${Math.max(left, 0)}px`;
+    };
+
+    const ocultar = () => {
+      tooltip.style.opacity = 0;
+      tooltip.style.display = "none";
+    };
+
+    el._tooltipEnter = mostrar;
+    el._tooltipLeave = ocultar;
+
+    el.addEventListener("mouseenter", mostrar);
+    el.addEventListener("mouseleave", ocultar);
+    el.addEventListener("focus", mostrar);
+    el.addEventListener("blur", ocultar);
   });
 }

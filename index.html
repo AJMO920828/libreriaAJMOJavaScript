@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Ejemplos Librería AJMO</title>
+  <link rel="stylesheet" href="ajmo.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="ajmo.js"></script>
+  <style>
+    body { background: #f0f0f0; padding: 20px; }
+    section { margin-bottom: 40px; }
+    h2 { color: #123A78; }
+  </style>
+</head>
+<body>
+
+  Los estilos estan basados en <a href="https://getbootstrap.com/docs/5.3/getting-started/introduction/">bootstrap@5.3.0</a> 
+  <section>
+    <h2>1. Validación de Formulario</h2>
+    <div class="row">
+       <div class="col-md-4 offset-md-4 mb-3">
+          <div class="card">
+            <div class="card-body">
+              <form id="formulario_demo" validate>
+                <div class="row">
+                  <div class="mb-3">
+                    <label class="form-label">Correo</label>
+                    <input type="email" name="email" class="form-control" required msg-error-required="El correo es obligatorio." msg-error-email="Formato de correo inválido.">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Edad</label>
+                    <input type="text" name="edad" class="form-control" required msg-error-number="Debe ser un número válido.">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Tipo</label>
+                    <select name="tipo" class="form-select" required msg-error-required="Selecciona una opción.">
+                      <option value="">--Selecciona--</option>
+                      <option value="uno">Uno</option>
+                      <option value="dos">Dos</option>
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <label>Nombre (solo letras, mínimo 3 caracteres)</label>
+                    <input type="text" name="nombre" class="form-control" required pattern="^[A-Za-z ]{3,}$" msg-error-required="Nombre requerido." msg-error-pattern="Solo letras y al menos 3 caracteres.">
+                  </div>
+                  <div class="mb-3 group">
+                    <label>Elige tus intereses (1 a 2 máximo):</label><br>
+                    <input type="checkbox" name="intereses" value="tech" data-min-required="1" data-max-required="2" required msg-error-required="Selecciona al menos uno." msg-error-max="Máximo 2 opciones"> Tecnología<br>
+                    <input type="checkbox" name="intereses" value="arte"> Arte<br>
+                    <input type="checkbox" name="intereses" value="deporte"> Deporte<br>
+                  </div>
+                  <div class="mb-3 group">
+                    <label>Género:</label><br>
+                    <input type="radio" name="genero" value="M" required msg-error-required="Selecciona un género."> Masculino
+                    <input type="radio" name="genero" value="F"> Femenino
+                  </div>
+                  <div class="mb-3 group">
+                    <label>Nombre o Apellido (al menos uno obligatorio)</label><br>
+                    <input type="text" name="nombreSimple" class="form-control d-inline-block" data-group="nombreApellido" placeholder="Nombre" style="width:48%">
+                    <input type="text" name="apellidoSimple" class="form-control d-inline-block" data-group="nombreApellido" placeholder="Apellido" style="width:48%">
+                  </div>
+                </div>
+                <div class="row" style="padding-top: 15px;">
+                  <div class="col-md-12 text-end">
+                    <button type="button" class="btn btn-primary btn-sm" onclick="validarFormularioGenerico('formulario_demo')">Enviar</button>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="limpiarFormularioGenerico('formulario_demo')">Limpiar</button>
+                  </div>
+                </div>  
+              </form>
+            </div>
+          </div>
+       </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>2. Llenado automático de formulario y contenedor</h2>
+    <button onclick="llenarFormularioYContenedor()" class="btn btn-secondary">Llenar datos de ejemplo</button>
+    <form id="formulario_autollenado" class="mt-3">
+      <div class="mb-3">
+        <label for="nombreAuto">Nombre</label>
+        <input type="text" name="nombre" id="nombreAuto" class="form-control">
+      </div>
+      <div class="mb-3">
+        <label for="emailAuto">Email</label>
+        <input type="email" name="email" id="emailAuto" class="form-control">
+      </div>
+    </form>
+    <div id="contenedorDatos" style="background:#fff; padding:10px; margin-top:10px; border:1px dashed #888">
+      <p><strong>Nombre:</strong> <span id="nombreContenedor"></span></p>
+      <p><strong>Email:</strong> <span id="emailContenedor"></span></p>
+    </div>
+  </section>
+
+  <section>
+    <h2>3. Tooltips</h2>
+    <button class="btn btn-primary btn-sm" tooltip tooltip-msg="Tooltip básico" tooltip-posicion="arriba">Hover arriba</button>
+    <button class="btn btn-danger btn-sm" tooltip tooltip-msg="Tooltip abajo" tooltip-posicion="abajo">Hover abajo</button>
+    <button class="btn btn-success btn-sm" tooltip tooltip-msg="Tooltip izquierdo" tooltip-posicion="izquierda">Hover izq</button>
+    <button class="btn btn-alert btn-sm" tooltip tooltip-msg="Tooltip derecho" tooltip-posicion="derecha">Hover der</button>
+  </section>
+
+  <section>
+    <h2>4. Tabla Dinámica con Paginación</h2>
+    <div id="contenedorTabla">
+      <div id="miContenedor">
+        <div data-actions="nombre" data-item="item" style="display: none;">
+          <div>{{item.nombre === 'Juan Pérez' ? 'Nombre Validado' : item.nombre}}</div>
+        </div>
+        <div data-actions="email" data-item="item" style="display: none;">
+          <a data-tpl-href="mailto:{{item.email}}" target="_blank" data-tpl>{{item.email | upper}}</a><br/>
+          {{item.email | lower}} <br/>
+          {{item.email | capitalize}} <br/>
+        </div>
+        <div data-actions="union" data-item="item" style="display: none;">
+          <div>
+            {{item.nombre}} - {{item.email}}
+            <span tooltip tooltip-msg="Correo empresarial" tooltip-posicion="derecha">
+              {{item.email.includes('example.com') ? '📧' : ''}}
+            </span>
+          </div>
+        </div>
+        <div data-actions="nombre" data-item="item" style="display: none;">
+          <div>{{item.nombre === 'Juan Pérez' ? 'Nombre Validado' : item.nombre}}</div>
+        </div>
+        <div data-actions="acciones">
+          <button class="btn-icon" onclick="verDetalle($event)" tooltip tooltip-msg="Editar">
+            <span class="material-symbols-outlined">edit</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>5. Mostrar registros seleccionados</h2>
+    <button onclick="mostrarSeleccionados()" class="btn btn-primary">Mostrar registros seleccionados</button>
+    <pre id="resultadoSeleccionados" style="background:#fff; padding:10px; margin-top:10px; border:1px solid #ccc"></pre>
+  </section>
+
+  <section>
+    <h2>6. Reemplazar toda la tabla</h2>
+    <button onclick="reemplazarTabla()" class="btn btn-danger">Cargar nueva lista</button>
+    <button onclick="ocultaCheck()" class="btn btn-danger" id="ocultarCheck" data-check="false">Ocultar Check</button>
+    <button onclick="ocultaSelectAllCheck()" class="btn btn-danger" id="ocultaSelectAllCheck" data-check="true">seleccionar solo los registros de la paginacion</button>
+  </section>
+
+  <section>
+    <h2>7. Agregar Nuevo Registro</h2>
+    <form id="form_agregar_registro" class="mb-3" validate>
+      <div class="mb-3">
+        <label for="nuevoNombre">Nombre</label>
+        <input type="text" id="nuevoNombre" name="nombre" class="form-control" required msg-error-required="Nombre obligatorio.">
+      </div>
+      <div class="mb-3">
+        <label for="nuevoEmail">Correo</label>
+        <input type="email" id="nuevoEmail" name="email" class="form-control" required msg-error-required="Correo obligatorio." msg-error-email="Formato inválido.">
+      </div>
+      <button type="submit" class="btn btn-primary">Agregar a tabla</button>
+    </form>
+  </section>
+
+  
+
+  <script src="demo-ajmo-setup.js"></script>
+
+</body>
+</html>
