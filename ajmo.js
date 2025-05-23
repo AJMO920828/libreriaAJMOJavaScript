@@ -835,19 +835,18 @@ function crearTablaConPaginacion({
     const info = document.createElement('span');
     info.className = 'info-pagina';
     info.textContent = `Página ${paginaActual} de ${totalPaginas}`;
-    const vistaInfo = document.createElement('span');
-    vistaInfo.className = 'info-vista';
-
-    const inicioVista = inicio + 1;
-    const finVista = Math.min(inicio + filasActuales, datosOrdenados.length);
-
-    vistaInfo.textContent = `Mostrando ${inicioVista} a ${finVista} de ${datosOrdenados.length}`;
-    paginador.appendChild(vistaInfo);
 
     paginador.appendChild(info);
     paginador.appendChild(crearBoton('chevron_right', () => cambiarPagina(paginaActual + 1), paginaActual === totalPaginas));
     paginador.appendChild(crearBoton('last_page', () => cambiarPagina(totalPaginas), paginaActual === totalPaginas));
 
+    const vistaInfo = document.createElement('span');
+    vistaInfo.className = 'info-vista';
+    const inicioVista = inicio + 1;
+    const finVista = Math.min(inicio + filasActuales, datosOrdenados.length);
+    vistaInfo.textContent = `${inicioVista} a ${finVista} de ${datosOrdenados.length}`;
+    paginador.appendChild(vistaInfo);
+    
     if (typeof activarTooltipsAJMO === 'function') {
       activarTooltipsAJMO();
     }
