@@ -256,3 +256,9 @@ input[type="checkbox"] {
   font-size: 14px;
   color: #333;
 }
+
+.info-vista {
+    font-size: 14px;
+    color: #333;
+    margin-left: 100px;
+}
