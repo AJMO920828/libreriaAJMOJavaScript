@@ -321,6 +321,41 @@ function renderizarFormulario(idFormulario, itemData) {
 }
 
 /**
+ *  Recupera las valores de un formulario o un contenedor se requiere el Identificador del contenedor para obtener los valores entrantes  del contenedor 
+ * @param {*} idContenedor 
+ * @returns Regresa el objeto obtenido
+ */
+function obtenerValoresFormulario(idContenedor) {
+  const contenedor = document.getElementById(idContenedor);
+  const campos = contenedor.querySelectorAll('input[data-model], select[data-model], textarea[data-model]');
+  const resultado = {};
+
+  campos.forEach(campo => {
+    const key = campo.getAttribute('data-model');
+    const tipo = campo.type;
+
+    if (tipo === 'checkbox') {
+      if (!resultado[key]) {
+        resultado[key] = [];
+      }
+      if (campo.checked) {
+        resultado[key].push(campo.value);
+      }
+    } else if (tipo === 'radio') {
+      if (campo.checked) {
+        resultado[key] = campo.value;
+      } else if (!(key in resultado)) {
+        resultado[key] = null;
+      }
+    } else {
+      resultado[key] = campo.value;
+    }
+  });
+
+  return resultado;
+}
+
+/**
  * 
  * Ejemplos de usuo
  * 
@@ -846,7 +881,7 @@ function crearTablaConPaginacion({
     const finVista = Math.min(inicio + filasActuales, datosOrdenados.length);
     vistaInfo.textContent = `${inicioVista} a ${finVista} de ${datosOrdenados.length}`;
     paginador.appendChild(vistaInfo);
-    
+
     if (typeof activarTooltipsAJMO === 'function') {
       activarTooltipsAJMO();
     }

@@ -1,5 +1,12 @@
 // demo-ajmo-setup.js
 
+function guardar() {
+    if(!validarFormularioGenerico('formulario_demo')){
+        return
+    }
+    alert("Registro guardado \n" + JSON.stringify(obtenerValoresFormulario('formulario_demo')))
+
+}
 const columnas = [
   { campo: "id", titulo: "ID", textAlign: "center" },
   { campo: "union", titulo: "Nombre + Email" },
@@ -45,8 +52,7 @@ function llenarFormularioYContenedor() {
     email: "valeria@example.com"
   };
   llenaFormulario(datosEjemplo, 'formulario_autollenado');
-  document.getElementById('nombreContenedor').textContent = datosEjemplo.nombre;
-  document.getElementById('emailContenedor').textContent = datosEjemplo.email;
+  renderizarFormulario("contenedorDatos", datosEjemplo);
 }
 
 function reemplazarTabla() {
