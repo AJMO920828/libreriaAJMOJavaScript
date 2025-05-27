@@ -921,21 +921,27 @@ function crearTablaConPaginacion({
   return {
     obtenerSeleccionados: () => Array.from(seleccionados.values()),
     refrescarTabla,
-    actualizarDatos: ({nuevosDatos, checkedList, selectAllAcrossPages}) => {
-        if(nuevosDatos){
-          datos.length = 0;
-          nuevosDatos.forEach(d => {
+    actualizarDatos: ({ nuevosDatos, checkedList, selectAllAcrossPages }) => {
+      if (nuevosDatos) {
+        datos.length = 0;
+        nuevosDatos.forEach(d => {
           if (d.id === undefined) d.id = numeroConMilisegundos();
           datos.push(d);
         });
+
+        // ⚠️ Limpieza necesaria
+        seleccionados.clear();
+        nodosPlantillaPorFila.clear();
       }
-      
-      if(checkedList != null) {
-        _checkedList = checkedList
+
+      if (checkedList != null) {
+        _checkedList = checkedList;
       }
-      if(selectAllAcrossPages != null) {
-        _selectAllAcrossPages = selectAllAcrossPages
+
+      if (selectAllAcrossPages != null) {
+        _selectAllAcrossPages = selectAllAcrossPages;
       }
+
       paginaActual = 1;
       render();
     }
