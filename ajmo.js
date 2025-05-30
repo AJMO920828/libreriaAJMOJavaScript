@@ -321,7 +321,7 @@ function renderizarFormulario(idFormulario, itemData) {
 }
 
 /**
- *  Recupera las valores de un formulario o un contenedor se requiere el Identificador del contenedor para obtener los valores entrantes  del contenedor 
+ * Recupera los valores de un formulario o un contenedor. Se requiere el identificador del contenedor para obtener los valores entrantes del contenedor.
  * @param {*} idContenedor 
  * @returns Regresa el objeto obtenido
  */
@@ -331,24 +331,30 @@ function obtenerValoresFormulario(idContenedor) {
   const resultado = {};
 
   campos.forEach(campo => {
+    const tipoDato = (campo.getAttribute('data-tipo-dato') || 'string').toLowerCase();
     const key = campo.getAttribute('data-model');
     const tipo = campo.type;
+
+    let valor;
 
     if (tipo === 'checkbox') {
       if (!resultado[key]) {
         resultado[key] = [];
       }
       if (campo.checked) {
-        resultado[key].push(campo.value);
+        valor = convertirTipo(campo.value, tipoDato);
+        resultado[key].push(valor);
       }
     } else if (tipo === 'radio') {
       if (campo.checked) {
-        resultado[key] = campo.value;
+        valor = convertirTipo(campo.value, tipoDato);
+        resultado[key] = valor;
       } else if (!(key in resultado)) {
         resultado[key] = null;
       }
     } else {
-      resultado[key] = campo.value;
+      valor = convertirTipo(campo.value, tipoDato);
+      resultado[key] = valor;
     }
   });
 
@@ -356,96 +362,33 @@ function obtenerValoresFormulario(idContenedor) {
 }
 
 /**
- * 
- * Ejemplos de usuo
- * 
- * 
-1. Número requerido con mensaje personalizado
-<div class="mb-3">
-  <label for="nomina" class="form-label">Nómina Global</label>
-  <input type="text" id="nomina" class="form-control" required
-         msg-error-required="Ingresa la nómina."
-         msg-error-number="Debe ser un número válido.">
-</div>
-
-2. Campo de correo electrónico
-<div class="mb-3">
-  <label for="email" class="form-label">Correo electrónico</label>
-  <input type="email" id="email" class="form-control" required
-         msg-error-required="El correo es obligatorio."
-         msg-error-email="Formato de correo inválido.">
-</div>
-
-3. Campo con patrón (solo letras, mínimo 3)
-<div class="mb-3">
-  <label for="nombre" class="form-label">Nombre</label>
-  <input type="text" id="nombre" class="form-control" required
-         pattern="^[A-Za-z ]{3,}$"
-         msg-error-required="El nombre es obligatorio."
-         msg-error-pattern="Solo letras y mínimo 3 caracteres.">
-</div>
-
-4. Select requerido
-<div class="mb-3">
-  <label for="tipoPago" class="form-label">Tipo de Pago</label>
-  <select id="tipoPago" class="form-select" required
-          msg-error-required="Selecciona el tipo de pago.">
-    <option value="">-- Selecciona --</option>
-    <option value="transferencia">Transferencia</option>
-    <option value="efectivo">Efectivo</option>
-  </select>
-</div>
-
-5. Campo dependiente (visible sólo si se selecciona transferencia)
-<div class="mb-3">
-  <label for="cuentaClabe" class="form-label">Cuenta CLABE</label>
-  <input type="text" id="cuentaClabe" class="form-control" required
-         data-depends-on="tipoPago"
-         data-depends-value="transferencia"
-         msg-error-required="Requerido cuando el pago es transferencia.">
-</div>
-
-6. Campo tipo fecha
-<div class="mb-3">
-  <label for="fechaPago" class="form-label">Fecha de Pago</label>
-  <input type="date" id="fechaPago" class="form-control" required
-         msg-error-required="Selecciona una fecha.">
-</div>
-
-7. Campo tipo archivo con tamaño máximo (ej: 2 MB)
-<div class="mb-3">
-  <label for="comprobante" class="form-label">Comprobante</label>
-  <input type="file" id="comprobante" class="form-control" required
-         data-max-size="2097152"
-         msg-error-required="Sube el comprobante."
-         msg-error-size="El archivo no debe superar 2MB.">
-</div>
-
-8. Grupo de radios requerido
-<div class="mb-3">
-  <label class="form-label">¿Acepta términos?</label><br>
-  <input type="radio" name="acepta" value="si" required msg-error-required="Debe aceptar."> Sí
-  <input type="radio" name="acepta" value="no" required msg-error-required="Debe aceptar."> No
-</div>
-
-9. Checkbox requerido
-<div class="mb-3">
-  <input type="checkbox" id="politicas" required msg-error-required="Debes aceptar las políticas.">
-  <label for="politicas">Acepto las políticas de privacidad</label>
-</div>
-
-Formulario de ejemplo completo
-
-<form id="formulario_busqueda" novalidate>
-  <!-- todos los campos anteriores aquí -->
-
-  <div class="mt-4">
-    <button type="submit" class="btn btn-primary">Enviar</button>
-    <button type="button" class="btn btn-secondary" onclick="limpiarFormularioGenerico('formulario_busqueda')">Limpiar</button>
-  </div>
-</form>
+ * Convierte el valor de entrada al tipo de dato especificado
+ * @param {string} valor 
+ * @param {string} tipoDato 
+ * @returns valor convertido
  */
+function convertirTipo(valor, tipoDato) {
+  switch (tipoDato) {
+    case 'entero':
+    case 'int':
+      const intVal = parseInt(valor, 10);
+      return isNaN(intVal) ? null : intVal;
 
+    case 'double':
+    case 'float':
+      const floatVal = parseFloat(valor);
+      return isNaN(floatVal) ? null : floatVal;
+
+    case 'boolean':
+      if (valor === 'true' || valor === '1' || valor === 'on') return true;
+      if (valor === 'false' || valor === '0' || valor === 'off') return false;
+      return null;
+
+    case 'string':
+    default:
+      return valor;
+  }
+}
 
 
 /**
@@ -550,7 +493,14 @@ function crearTablaConPaginacion({
   selectAllAcrossPages = false,
   exportar = false,
   htmlExportar = null,
-  classBtnExportar = null
+  classBtnExportar = null,
+  classTable = null,
+  classTbody = null,
+  classThead = null,
+  classTh = null,
+  classTd = null,
+  classTrHead = null,
+  classTrBody = null
 }) {
   datos.forEach(item => {
     if (item.id === undefined) {
@@ -595,7 +545,10 @@ function crearTablaConPaginacion({
   const tabla = document.createElement('table');
   const thead = document.createElement('thead');
   const tbody = document.createElement('tbody');
-  tabla.className = "tabla-ajmo";
+  tabla.className = "tabla-ajmo " + classTable != null ? classTable : '';
+  thead.className =  classThead != null ? classThead : '';
+  tbody.className =  classTbody != null ? classTbody : '';
+
   tabla.appendChild(thead);
   tabla.appendChild(tbody);
 
@@ -731,8 +684,10 @@ function crearTablaConPaginacion({
 
     thead.innerHTML = '';
     const trHead = document.createElement('tr');
+    trHead.className =  classTrHead != null ? classTrHead : '';
     columnas.forEach(col => {
       const th = document.createElement('th');
+      th.className =  classTh != null ? classTh : '';
       th.setAttribute('data-col', col.campo);
       let thStyle = col.style || '';
       if (col.textAlign) {
@@ -760,12 +715,12 @@ function crearTablaConPaginacion({
 
     paginados.forEach(row => {
       const tr = document.createElement('tr');
-      tr.className = "tr-ajmo";
+      tr.className = "tr-ajmo" + classTrBody!= null ? classTrBody : '';
       const nodosTpl = [];
 
       columnas.forEach(col => {
         const td = document.createElement('td');
-        td.className = "td-ajmo";
+        td.className = "td-ajmo" + classTd != null ? classTd : '';
         if (col.textAlign) td.style.textAlign = col.textAlign;
 
         const plantilla = plantillas[col.campo];
