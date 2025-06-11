@@ -296,9 +296,14 @@ function renderizarFormulario(idFormulario, itemData) {
   const form = document.getElementById(idFormulario);
   if (!form) return;
 
+  // Guarda plantilla original una sola vez
+  if (!form.dataset.template) {
+    form.dataset.template = form.innerHTML;
+  }
+  const template = form.dataset.template;
   const contexto = { item: itemData };
 
-  form.innerHTML = form.innerHTML.replace(/{{\s*(.*?)\s*}}/g, (match, expression) => {
+  form.innerHTML = template.replace(/{{\s*(.*?)\s*}}/g, (match, expression) => {
     try {
       const fn = new Function('item', `with (item) { return (${expression}); }`);
       const resultado = fn(contexto);
@@ -309,7 +314,6 @@ function renderizarFormulario(idFormulario, itemData) {
     }
   });
 
-  // Evita inyección HTML (XSS)
   function escapeHTML(value) {
     return String(value)
       .replace(/&/g, '&amp;')
