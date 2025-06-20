@@ -114,3 +114,16 @@ Incluye ejemplos visuales para:
 
 - Validar formularios
 - Interactuar con registros seleccionados
+
+
+Tokens soportados para fecha:
+Token	Significado
+| ------------------------------------
+| dd   |	Día (01-31)                   |
+| mm   |	Mes numérico (01-12)          |
+| mmm  |	Mes abreviado (Ene, Feb, ...) |
+| yyyy |	Año completo                  |
+| hh   |	Hora (00-23)                  |
+| ii   |	Minutos (00-59)               |
+| ss   |	Segundos (00-59)              |
+| -------------------------------------

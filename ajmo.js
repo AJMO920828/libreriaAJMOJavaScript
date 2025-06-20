@@ -912,19 +912,62 @@ function renderExpresion(template, item) {
     return template.replace(/{{\s*(.*?)\s*}}/g, (_, expression) => {
       let exp = expression;
       let filtro = null;
+      let dateFormat = null;
 
-      if (expression.includes('|')) {
-        [exp, filtro] = expression.split('|').map(e => e.trim());
+      // Detectar filtros tipo "campo || moneda"
+      if (exp.includes('||')) {
+        const partes = exp.split('||').map(e => e.trim());
+        exp = partes[0];
+
+        // Detectar "moneda"
+        if (partes[1].toLowerCase() === 'moneda') {
+          filtro = 'moneda';
+        }
+
+        // Detectar Date Format
+        const matchDate = partes[1].match(/^Date Format\s+"(.+?)"$/i);
+        if (matchDate) {
+          filtro = 'fecha';
+          dateFormat = matchDate[1];
+        }
       }
 
       let result = new Function('item', `with(item){ return ${exp}; }`)(item);
 
+      // Filtros básicos que ya tenías
       const filtros = {
         upper: val => String(val).toUpperCase(),
         lower: val => String(val).toLowerCase(),
         capitalize: val => {
           const s = String(val);
           return s.charAt(0).toUpperCase() + s.slice(1);
+        },
+        moneda: val => {
+          if (isNaN(val)) return '';
+          return new Intl.NumberFormat('es-MX', {
+            style: 'currency',
+            currency: 'MXN',
+            minimumFractionDigits: 2
+          }).format(val);
+        },
+        fecha: val => {
+          if (!val) return '';
+          const d = new Date(val);
+          if (isNaN(d)) return '';
+
+          // Reemplazar tokens de formato
+          const pad = n => (n < 10 ? '0' + n : n);
+          const meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+
+          return dateFormat
+            .replace(/dd/gi, pad(d.getDate()))
+            .replace(/mmmmm/gi, meses[d.getMonth()])
+            .replace(/mmm/gi, meses[d.getMonth()])
+            .replace(/mm/gi, pad(d.getMonth() + 1))
+            .replace(/yyyy/gi, d.getFullYear())
+            .replace(/hh/gi, pad(d.getHours()))
+            .replace(/ii/gi, pad(d.getMinutes()))
+            .replace(/ss/gi, pad(d.getSeconds()));
         }
       };
 
